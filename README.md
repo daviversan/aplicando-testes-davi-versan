@@ -52,3 +52,60 @@ O resultado `succeeded: 6` indica que a classe `ConversorTemperatura` passou em 
 
 ![Resultado dos Testes Unitários](img/resultado_testes_unitarios.png)
 
+
+---
+
+# Testes Unitários com xUnit, Moq e FluentAssertions (Consulta de Crédito)
+
+Esta seção detalha a implementação de uma segunda bateria de testes, baseada no projeto de Consulta de Crédito. O grande diferencial desta etapa é a introdução de técnicas de simulação de dependências (**Mocks**) utilizando a biblioteca **Moq**, e a escrita de asserções mais semânticas e legíveis utilizando o **FluentAssertions**.
+
+## 1. Estrutura de Pastas e Arquivos
+
+Assim como no projeto de temperatura, este repositório segue o padrão de separação entre as regras de negócio e os testes. O projeto extraído encontra-se organizado da seguinte maneira:
+
+* **`DotNet5-Moq-xUnit-FluentAssertions-main/`**: Diretório raiz do projeto baixado.
+  * **`ConsultaCredito/`**: Projeto do tipo *Class Library* contendo a lógica principal.
+    * Aqui encontram-se as interfaces e classes de serviço responsáveis por validar a situação de crédito de um cliente. O design deste projeto é voltado para injeção de dependências, permitindo que dependências externas (como acesso a banco de dados ou APIs do Serasa/SPC) sejam desacopladas.
+  * **`ConsultaCredito.Testes/`**: Projeto focado na validação automatizada.
+    * Contém as classes de teste que validam os cenários de negócio da consulta de crédito.
+    * `ConsultaCredito.Testes.csproj`: Arquivo de configuração que, além do `xunit`, agora inclui os pacotes `Moq` e `FluentAssertions`.
+
+---
+
+## 2. Aplicação dos Testes
+
+Neste projeto, a complexidade aumenta, pois a classe de serviço que realiza a análise de crédito não trabalha sozinha; ela depende de informações de sistemas externos. Para contornar isso e realizar um teste puramente unitário, introduzimos o conceito de **Mocks**.
+
+* **O que são Mocks e a biblioteca Moq?**
+  Mocks (ou objetos simulados) são "dublês" de código criados para imitar o comportamento de dependências reais (como um banco de dados ou uma API externa). O objetivo é testar apenas a lógica da classe principal, isolando-a do mundo externo. 
+  A biblioteca **Moq** é utilizada para "programar" essas respostas falsas. Por exemplo, podemos dizer ao Mock: *"Quando a classe perguntar o status do CPF X, responda que ele possui pendências"*.
+
+* **Objetivos e Cenários de Teste:**
+  O objetivo é garantir que a lógica de aprovação ou reprovação de crédito tome as decisões corretas com base em diferentes cenários de entrada. Os cenários mapeados nos testes geralmente cobrem:
+  1. Cliente sem pendências financeiras (Crédito Aprovado).
+  2. Cliente com pendências ativas (Crédito Negado/Reprovado).
+  3. Comportamento do sistema perante falhas ou dados inválidos.
+  
+  O Moq simula as respostas do serviço de verificação, e o xUnit executa os cenários passando por cada uma das condições de negócio.
+
+* **Uso do FluentAssertions:**
+  Em vez de utilizar as asserções clássicas (como `Assert.Equal`), este projeto utiliza o **FluentAssertions**. Ele permite escrever as validações em um formato mais próximo da linguagem natural, facilitando a leitura e manutenção do código. 
+  *Exemplo:* Em vez de `Assert.Equal("Aprovado", resultado)`, utiliza-se `resultado.Should().Be("Aprovado")`.
+
+---
+
+## 3. Resultados Obtidos
+
+A execução dos testes foi realizada via terminal utilizando o comando `dotnet test` dentro do diretório `ConsultaCredito.Testes`.
+
+* **Resumo da Execução (Test summary):**
+  * **Total de Testes:** 4
+  * **Passaram (Succeeded):** 4
+  * **Falharam (Failed):** 0
+  * **Ignorados (Skipped):** 0
+  * **Duração:** 0.8 segundos
+
+**Conclusão dos Testes:**
+Todos os 4 cenários isolados pela técnica de mocking foram validados com 100% de sucesso. Isso garante que a regra de negócio central da análise de crédito está funcionando exatamente como planejado, sem depender da disponibilidade de APIs ou bancos de dados externos.
+
+![Resultado dos Testes com Moq](img/resultado_moq_tests.png)
