@@ -172,3 +172,50 @@ O teste C# nativamente espera uma correspondência exata. Como o cálculo intern
 
 
 ![Resultado dos Testes SpecFlow](img/resultado_specflow_tests.png)
+
+---
+
+# Refatoração e Solução de Problemas em BDD (Falha de ponto decimal)
+
+Esta seção detalha a criação de um projeto simulado (`SolucaoJurosCompostos`) focado estritamente em corrigir as falhas de asserção matemática e leitura de dados encontrados na etapa anterior. O objetivo foi aplicar boas práticas de engenharia de software para lidar com conflitos de regionalização (Culture) do sistema operacional e falhas por arredondamento financeiro.
+
+## 1. Estrutura de Pastas e Arquivos
+
+O projeto foi construído do zero de forma limpa e objetiva para isolar a regra de negócio e as especificações do BDD:
+
+* **`SolucaoJurosCompostos/`**: Diretório raiz do projeto refatorado.
+  * **`APIFinancas/`**: Projeto referenciando a lógica da aplicação.
+    * `CalculoFinanceiro.cs`: Classe responsável pela fórmula dos juros compostos. Foi ajustada com a aplicação de `Math.Round` para garantir que o retorno financeiro seja padronizado com duas casas decimais.
+  * **`APIFinancas.Especificacoes/`**: Projeto de testes automatizados utilizando SpecFlow e xUnit.
+    * `Features/CalculoJurosCompostos.feature`: Arquivo Gherkin descrevendo o cenário de simulação que havia falhado por erro de cultura na etapa anterior.
+    * `Steps/CalculoJurosCompostosStepDefinition.cs`: Arquivo contendo a lógica de "tradução" dos passos (*Step Definitions*). Recebeu refatorações profundas para realizar o *parse* correto dos números.
+
+---
+
+## 2. Aplicação das Correções nos Testes
+
+A refatoração abordou dois desafios clássicos em testes automatizados de cálculos financeiros:
+
+* **Problema de Localização e Cultura do SO (`Culture`):** Como o sistema operacional da máquina de testes estava configurado em português do Brasil (`pt-BR`), o framework considerava a vírgula como separador decimal. Assim, pontos em números como `11937.28` eram ignorados, transformando o valor em mais de 1 milhão. 
+  * *A Solução:* A tipagem dos parâmetros das sentenças no SpecFlow foi alterada de numérico (`double`) para texto (`string`). O código C# foi programado para ler esse texto e forçar a conversão usando `CultureInfo.InvariantCulture`. Isso garante que o padrão americano (ponto como separador decimal) seja respeitado de forma imutável, independente da máquina onde o teste execute.
+
+* **Problema de Precisão Decimal (Arredondamento):**
+  Os testes nativos do xUnit esperam correspondência absoluta. Valores como `30598,88` e `30598,87954...` causavam a falha da asserção (`Assert.Equal() Failure`).
+  * *A Solução:* Foi adicionado um parâmetro extra de precisão diretamente na asserção do xUnit: `Assert.Equal(valorEsperado, _resultadoCalculo, 2)`. O número "2" instrui o motor de teste a tolerar qualquer divergência matemática a partir da terceira casa decimal.
+
+---
+
+## 3. Resultados Obtidos
+
+A execução dos testes foi realizada na raiz do novo projeto via terminal com o comando `dotnet test`.
+
+* **Resumo da Execução (Test summary):**
+  * **Total de Testes:** 1 (Cenário focado na refatoração)
+  * **Passaram (Succeeded):** 1
+  * **Falharam (Failed):** 0
+  * **Ignorados (Skipped):** 0
+
+**Conclusão dos Testes:**
+A aplicação conjunta da leitura via `InvariantCulture` e do limite de casas decimais blindou o teste contra instabilidades. O cenário Gherkin foi lido e interpretado com exatidão, e a asserção validou a regra de negócio com perfeição, resultando em um sucesso livre de falsos-negativos.
+
+![Resultado da Refatoração SpecFlow](img/resultado_refatoracao_specflow.png)
