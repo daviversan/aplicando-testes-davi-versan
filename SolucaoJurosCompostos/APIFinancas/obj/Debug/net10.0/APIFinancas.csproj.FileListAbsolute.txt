@@ -1,0 +1,12 @@
+/home/dversan/Documents/ponderadas/aplicando-testes-davi-versan/SolucaoJurosCompostos/APIFinancas/bin/Debug/net10.0/APIFinancas.deps.json
+/home/dversan/Documents/ponderadas/aplicando-testes-davi-versan/SolucaoJurosCompostos/APIFinancas/bin/Debug/net10.0/APIFinancas.dll
+/home/dversan/Documents/ponderadas/aplicando-testes-davi-versan/SolucaoJurosCompostos/APIFinancas/bin/Debug/net10.0/APIFinancas.pdb
+/home/dversan/Documents/ponderadas/aplicando-testes-davi-versan/SolucaoJurosCompostos/APIFinancas/obj/Debug/net10.0/APIFinancas.GeneratedMSBuildEditorConfig.editorconfig
+/home/dversan/Documents/ponderadas/aplicando-testes-davi-versan/SolucaoJurosCompostos/APIFinancas/obj/Debug/net10.0/APIFinancas.AssemblyInfoInputs.cache
+/home/dversan/Documents/ponderadas/aplicando-testes-davi-versan/SolucaoJurosCompostos/APIFinancas/obj/Debug/net10.0/APIFinancas.AssemblyInfo.cs
+/home/dversan/Documents/ponderadas/aplicando-testes-davi-versan/SolucaoJurosCompostos/APIFinancas/obj/Debug/net10.0/APIFinancas.csproj.CoreCompileInputs.cache
+/home/dversan/Documents/ponderadas/aplicando-testes-davi-versan/SolucaoJurosCompostos/APIFinancas/obj/Debug/net10.0/APIFinancas.sourcelink.json
+/home/dversan/Documents/ponderadas/aplicando-testes-davi-versan/SolucaoJurosCompostos/APIFinancas/obj/Debug/net10.0/APIFinancas.dll
+/home/dversan/Documents/ponderadas/aplicando-testes-davi-versan/SolucaoJurosCompostos/APIFinancas/obj/Debug/net10.0/refint/APIFinancas.dll
+/home/dversan/Documents/ponderadas/aplicando-testes-davi-versan/SolucaoJurosCompostos/APIFinancas/obj/Debug/net10.0/APIFinancas.pdb
+/home/dversan/Documents/ponderadas/aplicando-testes-davi-versan/SolucaoJurosCompostos/APIFinancas/obj/Debug/net10.0/ref/APIFinancas.dll

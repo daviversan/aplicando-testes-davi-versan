@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="APIFinancas.Especificacoes/APIFinancas.Especificacoes.csproj" />
+  <Project Path="APIFinancas/APIFinancas.csproj" />
+</Solution>
