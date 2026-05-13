@@ -109,3 +109,66 @@ A execução dos testes foi realizada via terminal utilizando o comando `dotnet 
 Todos os 4 cenários isolados pela técnica de mocking foram validados com 100% de sucesso. Isso garante que a regra de negócio central da análise de crédito está funcionando exatamente como planejado, sem depender da disponibilidade de APIs ou bancos de dados externos.
 
 ![Resultado dos Testes com Moq](img/resultado_moq_tests.png)
+
+---
+
+# Testes de API e BDD com SpecFlow e xUnit (Cálculo de Juros Compostos)
+
+Esta seção documenta a terceira etapa do estudo de testes, baseada em uma API REST de cálculos financeiros (Juros Compostos). O principal diferencial deste projeto é a aplicação da metodologia **BDD (Behavior-Driven Development)** utilizando o framework **SpecFlow** em conjunto com o xUnit.
+
+## 1. Estrutura de Pastas e Arquivos
+
+O projeto reflete uma arquitetura de API RESTful em .NET, acompanhada de um projeto de testes focado em especificações de comportamento. Com base na estrutura do repositório, temos:
+
+* **`ASPNETCore5-REST_API.../`**: Diretório raiz do projeto baixado.
+  * **`APIFinancas/`**: Projeto principal da API Web (ASP.NET Core).
+    * `Controllers/` e `Models/`: Contêm a estrutura da API para receber requisições HTTP e estruturar os dados.
+    * `CalculoFinanceiro.cs`: Classe que detém a regra de negócio e a fórmula matemática para o cálculo dos juros compostos.
+    * `Dockerfile`, `Startup.cs`, `Program.cs`: Arquivos de configuração da API e de contêineres.
+  * **`APIFinancas.Especificacoes/`**: Projeto dedicado aos testes automatizados guiados por comportamento (BDD).
+    * `CalculoJurosCompostos.feature`: Arquivo escrito em linguagem natural (sintaxe Gherkin) que descreve os cenários de teste de forma compreensível para humanos (Dado / Quando / Então).
+    * `CalculoJurosCompostosStepDefinition.cs`: Arquivo de código C# que mapeia e executa ("traduz") as frases do arquivo `.feature` para código de teste real utilizando o xUnit.
+    * `specflow.json`: Arquivo de configuração do framework SpecFlow.
+
+---
+
+## 2. Aplicação dos Testes e a Metodologia BDD
+
+Nesta etapa, o foco muda de testes puramente técnicos (testar métodos isolados) para testes baseados no comportamento esperado do sistema.
+
+* **O que é BDD (Behavior-Driven Development)?**
+  O BDD é uma técnica de desenvolvimento ágil que encoraja a colaboração entre desenvolvedores, QAs (Quality Assurance) e pessoas não-técnicas (como analistas de negócios e clientes). Em vez de focar no código em si, o BDD foca em *como o sistema deve se comportar* em cenários específicos, utilizando uma linguagem ubíqua e acessível.
+
+* **O uso do SpecFlow e Gherkin:**
+  O **SpecFlow** é a ferramenta do ecossistema .NET para aplicar BDD. Ele utiliza a linguagem **Gherkin**, que estrutura os cenários da seguinte forma:
+  * **Dado (Given):** O contexto ou estado inicial (ex: *Dado que o valor do empréstimo é de R$ 11.937,28*).
+  * **Quando (When):** A ação executada (ex: *Quando eu solicitar o cálculo do valor total*).
+  * **Então (Then):** O resultado esperado ou validação (ex: *Então o resultado será 30.598,88*).
+
+* **Objetivos e Cenários de Teste:**
+  O objetivo é validar se o endpoint da API ou a classe de cálculo financeiro processa corretamente o montante final baseado em diferentes variáveis (Valor Inicial, Taxa de Juros e Tempo em Meses). Os cenários simulam chamadas reais à lógica de negócio, garantindo que as projeções financeiras estejam corretas sob a ótica do usuário final.
+
+---
+
+## 3. Resultados Obtidos
+
+A execução dos testes foi realizada via terminal dentro do diretório `APIFinancas.Especificacoes`. Diferente dos projetos anteriores, os resultados obtidos aqui demonstram um cenário comum no desenvolvimento de software envolvendo cálculos de ponto flutuante: **a falha por divergência de precisão decimal.**
+
+* **Resumo da Execução (Test summary):**
+  * **Total de Testes:** 7
+  * **Passaram (Succeeded):** 2
+  * **Falharam (Failed):** 5
+  * **Ignorados (Skipped):** 0
+  * **Duração:** 1.2 segundos
+
+**Análise das Falhas (Conclusão dos Testes):**
+Os 5 testes falharam na etapa de asserção (`Assert.Equal() Failure`). Ao analisarmos o *Stack Trace* e a saída do terminal, notamos que a falha **não ocorre porque a fórmula matemática está totalmente errada**, mas sim por causa do arredondamento de casas decimais (precisão). 
+
+Por exemplo, em um dos cenários:
+* **Esperado (Expected):** `30598,88`
+* **Recebido (Actual):** `30598,87954147902`
+
+O teste C# nativamente espera uma correspondência exata. Como o cálculo interno gerou uma dízima ou um valor de alta precisão que não foi arredondado para duas casas decimais (padrão monetário) antes da asserção, o xUnit acusa falha. 
+
+
+![Resultado dos Testes SpecFlow](img/resultado_specflow_tests.png)
