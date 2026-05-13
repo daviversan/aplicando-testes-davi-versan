@@ -20,10 +20,10 @@ jobs:
         dotnet-version: '10.0' 
 
     - name: Restaurar dependências
-      run: dotnet restore SolucaoJurosCompostos/SimulacaoJuros.sln
+      run: dotnet restore SolucaoJurosCompostos/SimulacaoJuros.slnx
 
     - name: Compilar o projeto (Build)
-      run: dotnet build SolucaoJurosCompostos/SimulacaoJuros.sln --no-restore
+      run: dotnet build SolucaoJurosCompostos/SimulacaoJuros.slnx --no-restore
 
     - name: Executar Testes Automatizados (xUnit + SpecFlow)
-      run: dotnet test SolucaoJurosCompostos/SimulacaoJuros.sln --no-build --verbosity normal
+      run: dotnet test SolucaoJurosCompostos/SimulacaoJuros.slnx --no-build --verbosity normal
