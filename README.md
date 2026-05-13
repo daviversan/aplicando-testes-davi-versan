@@ -219,3 +219,65 @@ A execução dos testes foi realizada na raiz do novo projeto via terminal com o
 A aplicação conjunta da leitura via `InvariantCulture` e do limite de casas decimais blindou o teste contra instabilidades. O cenário Gherkin foi lido e interpretado com exatidão, e a asserção validou a regra de negócio com perfeição, resultando em um sucesso livre de falsos-negativos.
 
 ![Resultado da Refatoração SpecFlow](img/resultado_refatoracao_specflow.png)
+
+
+---
+
+# Automação de Testes com CI/CD (GitHub Actions)
+
+Esta seção finaliza a estruturação do projeto detalhando a implementação de uma esteira de **Integração Contínua (CI)** utilizando o **GitHub Actions**. O objetivo desta prática de DevOps é garantir a integridade do código de forma automatizada, assegurando que nenhuma nova alteração quebre as regras de negócio ou as especificações de comportamento (BDD) já validadas.
+
+## 1. Estrutura de Pastas e Configuração
+
+Para que o GitHub reconheça e execute a automação, foi necessário criar uma estrutura de diretórios específica e um arquivo de configuração nativo:
+
+* **`.github/workflows/`**: Diretório padrão exigido pelo GitHub para armazenar as definições de esteiras (workflows).
+  * **`dotnet-tests.yml`**: Arquivo de configuração escrito em YAML que dita as "regras do jogo" para o servidor em nuvem. Ele define qual sistema operacional usar, qual versão do .NET instalar e quais comandos de terminal devem ser executados.
+
+Abaixo está a configuração final utilizada para rodar os testes da solução de juros compostos:
+
+```yaml
+name: .NET Core CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout do código
+      uses: actions/checkout@v4
+
+    - name: Configurar o ambiente .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0'
+
+    - name: Restaurar dependências
+      run: dotnet restore SolucaoJurosCompostos/SimulacaoJuros.slnx
+
+    - name: Compilar o projeto (Build)
+      run: dotnet build SolucaoJurosCompostos/SimulacaoJuros.slnx --no-restore
+
+    - name: Executar Testes Automatizados (xUnit + SpecFlow)
+      run: dotnet test SolucaoJurosCompostos/SimulacaoJuros.slnx --no-build --verbosity normal
+
+``` 
+
+## 2. Aplicação da Esteira e Funcionamento
+
+- Gatilho (Trigger): O bloco on: push determina que a esteira seja ativada automaticamente a cada novo envio de código para a branch main.
+
+- Ambiente Limpo (Runner): O GitHub aloca uma máquina virtual limpa com Linux (ubuntu-latest). O passo de checkout baixa o código do repositório para esta máquina.
+
+- Resolução de Caminhos (Pathing): Como o repositório é composto por múltiplos projetos (monorepo), os comandos .NET foram explicitamente direcionados ao arquivo moderno de solução (SimulacaoJuros.slnx). Isso evita erros de ambiguidade (MSB1003) durante a compilação.
+
+- Tolerância a Falhas: Se o código enviado contiver erros de sintaxe (como duplicidade de cabeçalhos no Gherkin) ou falhas de asserção matemática, o passo dotnet test falhará e a esteira será abortada, recebendo um status vermelho de "Failed".
+
+
+![Resultado da automação](img/esteira_ci.png)
